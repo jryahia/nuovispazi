@@ -566,24 +566,29 @@ document.documentElement.classList.add('js');
 /* kinetic split — wraps text nodes into animated word spans, keeps inline elements */
 function kineticSplit(el){
   var idx = 0;
+  var frag = document.createDocumentFragment();
   var nodes = Array.prototype.slice.call(el.childNodes);
   nodes.forEach(function(node){
     if (node.nodeType === 3){
       var parts = node.textContent.split(/(\s+)/);
       parts.forEach(function(part){
-        if (!part.trim()){ el.appendChild(document.createTextNode(part)); return; }
+        if (!part) return;
+        if (!part.trim()){ frag.appendChild(document.createTextNode(part)); return; }
         var w = document.createElement('span');
         w.className = 'w';
         w.style.setProperty('--d', (idx * 0.055) + 's');
         w.textContent = part;
-        el.appendChild(w);
+        frag.appendChild(w);
         idx++;
       });
     } else if (node.nodeType === 1){
       node.classList.add('w');
+      frag.appendChild(node);
       idx++;
     }
   });
+  while (el.firstChild) el.removeChild(el.firstChild);
+  el.appendChild(frag);
 }
 document.querySelectorAll('.split').forEach(kineticSplit);
 
@@ -611,5 +616,22 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'Intersect
   items.forEach(function(el){ el.classList.add('in'); });
 }
 </script>
+<!-- GLASS LAYER v1 -->
+<style>
+:root{--gl-a:225,29,46;--gl-a2:179,16,31;--gl-surf:rgba(255,255,255,.5);--gl-surf-2:rgba(255,255,255,.7);--gl-bd:rgba(17,17,17,.1);--gl-bd-hi:rgba(225,29,46,.45);--gl-hl:rgba(255,255,255,.75);--gl-nav:rgba(246,244,239,.62);--gl-sh:rgba(17,17,17,.28);--gl-r:0px;--gl-ease:cubic-bezier(.34,1.56,.64,1);--gl-out:cubic-bezier(.22,1,.36,1)}
+@supports(transition-timing-function:linear(0,1)){:root{--gl-ease:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1)}}
+::selection{background:rgba(225,29,46,.28)}
+.card{background-color:var(--gl-surf);background-image:radial-gradient(380px circle at var(--mx,50%) var(--my,-40%),rgba(225,29,46,.13),transparent 65%);border:1px solid var(--gl-bd);-webkit-backdrop-filter:blur(12px) saturate(140%);backdrop-filter:blur(12px) saturate(140%);box-shadow:inset 0 1px 0 var(--gl-hl),0 18px 40px -28px var(--gl-sh);transition:opacity .7s ease,transform .6s var(--gl-ease),border-color .3s var(--gl-out),background-color .3s var(--gl-out),box-shadow .45s var(--gl-out)}
+.card:hover{background-color:var(--gl-surf-2);border-color:var(--gl-bd-hi);box-shadow:inset 0 1px 0 var(--gl-hl),0 0 0 1px rgba(225,29,46,.12),0 26px 60px -26px rgba(225,29,46,.5)}
+.btn{transition:transform .55s var(--gl-ease),box-shadow .35s var(--gl-out),background-color .3s var(--gl-out),border-color .3s var(--gl-out),color .2s,filter .3s}
+.btn:active{transition-duration:.12s}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid rgb(225,29,46);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.card,.btn{transition-duration:.01ms}}
+.top{background:rgba(246,244,239,.64);-webkit-backdrop-filter:saturate(160%) blur(18px);backdrop-filter:saturate(160%) blur(18px)}
+.card{background-color:rgba(255,254,251,.7);border-color:var(--line)}
+.card:hover{border-color:var(--ink);box-shadow:0 26px 60px -34px rgba(17,17,17,.35)}
+</style>
+<script>(function(){if(!matchMedia('(pointer:fine)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;var S=".card",q=0,ev;document.addEventListener('pointermove',function(e){ev=e;if(q)return;q=requestAnimationFrame(function(){q=0;var t=ev.target,el=t&&t.closest?t.closest(S):null;if(!el)return;var r=el.getBoundingClientRect();el.style.setProperty('--mx',(ev.clientX-r.left)+'px');el.style.setProperty('--my',(ev.clientY-r.top)+'px')})},{passive:true})})();</script>
+<!-- /GLASS LAYER v1 -->
 </body>
 </html>
