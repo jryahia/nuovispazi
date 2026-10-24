@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nuovispazi-hq.vercel.app/sitemap.xml
